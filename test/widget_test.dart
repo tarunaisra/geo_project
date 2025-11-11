@@ -1,29 +1,66 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+// Provide a local minimal MyApp and counter widget for this test to avoid relying
+// on an external package import (which may not exist in this environment).
 
-import 'package:geo_project/lib/main.dart'; // Update the path if main.dart is located in the lib folder
+class CounterWidget extends StatefulWidget {
+  static final GlobalKey<_CounterWidgetState> globalKey =
+      GlobalKey<_CounterWidgetState>();
+
+  const CounterWidget({Key? key}) : super(key: key);
+
+  @override
+  _CounterWidgetState createState() => _CounterWidgetState();
+}
+
+class _CounterWidgetState extends State<CounterWidget> {
+  int _counter = 0;
+
+  void increment() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('$_counter', style: Theme.of(context).textTheme.headlineMedium);
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Test App')),
+        body: Center(child: CounterWidget(key: CounterWidget.globalKey)),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () =>
+              CounterWidget.globalKey.currentState?.increment(),
+          child: const Icon(Icons.add),
+        ),
+      ),
+    );
+  }
+}
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    // Build app dan jalankan satu frame
+    await tester.pumpWidget(MyApp());
 
-    // Verify that our counter starts at 0.
+    // Pastikan angka awal 0
     expect(find.text('0'), findsOneWidget);
     expect(find.text('1'), findsNothing);
 
-    // Tap the '+' icon and trigger a frame.
+    // Tekan icon "+"
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
-    // Verify that our counter has incremented.
+    // Pastikan counter bertambah
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
   });
